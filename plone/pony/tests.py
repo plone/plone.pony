@@ -1,54 +1,35 @@
-import unittest
+# integration and functional tests
+# see http://plone.org/documentation/tutorial/testing/writing-a-plonetestcase-unit-integration-test
+# for more information about the following setup
 
-from zope.testing import doctestunit
-from zope.component import testing
+from unittest import TestSuite
+from zope.testing import doctest
 from Testing import ZopeTestCase as ztc
-
 from Products.Five import zcml
 from Products.Five import fiveconfigure
 from Products.PloneTestCase import PloneTestCase as ptc
-from Products.PloneTestCase.layer import PloneSite
-ptc.setupPloneSite()
+from Products.PloneTestCase.layer import onsetup
 
-import plone.pony
 
-class TestCase(ptc.PloneTestCase):
-    class layer(PloneSite):
-        @classmethod
-        def setUp(cls):
-            fiveconfigure.debug_mode = True
-            zcml.load_config('configure.zcml',
-                             plone.pony)
-            fiveconfigure.debug_mode = False
+@onsetup
+def setup_product():
+    fiveconfigure.debug_mode = True
+    import plone.pony
+    zcml.load_config('configure.zcml', plone.pony)
+    fiveconfigure.debug_mode = False
 
-        @classmethod
-        def tearDown(cls):
-            pass
+setup_product()
+ptc.setupPloneSite(extension_profiles=('plone.pony:default',))
+
+
+optionflags = (doctest.REPORT_ONLY_FIRST_FAILURE |
+               doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 
 def test_suite():
-    return unittest.TestSuite([
+    return TestSuite([
+        ztc.FunctionalDocFileSuite(
+           'README.txt', package='plone.pony',
+           test_class=ptc.FunctionalTestCase, optionflags=optionflags),
+    ])
 
-        # Unit tests
-        #doctestunit.DocFileSuite(
-        #    'README.txt', package='plone.pony',
-        #    setUp=testing.setUp, tearDown=testing.tearDown),
-
-        #doctestunit.DocTestSuite(
-        #    module='plone.pony.mymodule',
-        #    setUp=testing.setUp, tearDown=testing.tearDown),
-
-
-        # Integration tests that use PloneTestCase
-        #ztc.ZopeDocFileSuite(
-        #    'README.txt', package='plone.pony',
-        #    test_class=TestCase),
-
-        #ztc.FunctionalDocFileSuite(
-        #    'browser.txt', package='plone.pony',
-        #    test_class=TestCase),
-
-        ])
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
