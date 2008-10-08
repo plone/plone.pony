@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <object>
-  <order manager="plone.portalheader" skinname="Plone Default">
+  <order manager="plone.portalheader" skinname="*" purge="False">
     <viewlet name="plone.pony"
              insert-after="plone.skip_links" />
   </order>
