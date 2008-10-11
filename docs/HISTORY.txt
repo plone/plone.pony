@@ -1,11 +1,16 @@
 Changelog
 =========
 
-1.2 - Unreleased
+1.3 - Unreleased
+----------------
+
+
+1.2 - 2008-10-11
 ----------------
 
 * Close the pre tag properly.
   [davisagli]
+
 
 1.1 - 2008-10-08
 ----------------
